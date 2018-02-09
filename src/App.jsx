@@ -7,6 +7,11 @@ import {
   RecordButton,
   Time,
 } from './components'
+import {
+  readdir,
+  join,
+} from './helpers/nodejs'
+import updaterOf from './helpers/updaterOf'
 
 class App extends Component {
   render () {
@@ -18,12 +23,16 @@ class App extends Component {
       unsetMouseTracking,
       recordingSeconds,
       resetRecordingSeconds,
+      assets,
+      assetIndex,
     } = this.props
     return (
       <div className='App'>
         <Header />
         <Media
           {...{
+            assetIndex,
+            assets,
             recording,
             mouseTracking,
             setMouseTracking,
@@ -44,6 +53,10 @@ class App extends Component {
   }
 
   async componentDidMount () {
+    const {assetDir} = window.globals
+    const files = await readdir(assetDir)
+    const filePaths = files.map((file) => join(assetDir, file))
+    this.props.setAssets(filePaths)
   }
 
   componentDidUpdate (prev) {
@@ -66,6 +79,8 @@ export default withStateHandlers(
     recording: false,
     recordingSeconds: 0,
     mouseTracking: false,
+    assets: [],
+    assetIndex: 0,
   }),
   {
     toggleRecording: ({recording}) => () => ({recording: !recording}),
@@ -73,5 +88,8 @@ export default withStateHandlers(
     unsetMouseTracking: () => () => ({mouseTracking: false}),
     countupRecordingSeconds: ({recordingSeconds}) => () => ({recordingSeconds: recordingSeconds + 1}),
     resetRecordingSeconds: () => () => ({recordingSeconds: 0}),
+    setAssets: updaterOf('assets'),
+    countupAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex + 1}),
+    countdownAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex - 1}),
   }
 )(App)

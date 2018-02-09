@@ -7,6 +7,7 @@ const assert = window.require('assert')
 
 export const join = path.join
 export const extname = path.extname
+export const relative = path.relative
 export const ok = assert.ok
 
 export const readFile = promisify(fs.readFile)
@@ -28,3 +29,5 @@ export const copy = (src, dest) => new Promise((resolve, reject) => {
 export const unlink = promisify(fs.unlink)
 
 export const exec = promisify(childProcess.exec)
+
+export const readdir = promisify(fs.readdir)
