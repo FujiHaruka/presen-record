@@ -1,0 +1,13 @@
+const { dir } = require('the-templates')
+
+module.exports = dir.recursive({
+  dirname: __dirname,
+  name: 'wrappers',
+  ext: '.jsx',
+  description: 'wrapper functions'
+})
+
+
+if (!module.parent) {
+  require('coz').render(__filename)
+}

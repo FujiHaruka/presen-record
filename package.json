@@ -1,0 +1,38 @@
+{
+  "name": "presen-record",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "presen-record": "./main_process/main.js"
+  },
+  "dependencies": {
+    "asleep": "^1.0.3",
+    "classnames": "^2.2.5",
+    "coz": "^6.0.20",
+    "electron": "^1.7.11",
+    "electron-args": "^0.1.0",
+    "es6-promisify": "^5.0.0",
+    "linkstate": "^1.1.0",
+    "query-string": "^5.0.1",
+    "ramda": "^0.25.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "1.1.0",
+    "recompose": "^0.26.0",
+    "serve": "^6.4.9",
+    "the-templates": "^2.4.3",
+    "uuid": "^3.2.1"
+  },
+  "scripts": {
+    "electron": "electron ./main_process/main.js",
+    "preinstall": "./misc/mustInstallByNpm.js",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "coz": "coz render src/**/.*.bud"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.7.3"
+  }
+}
