@@ -23,20 +23,28 @@ class App extends Component {
       unsetMouseTracking,
       recordingSeconds,
       resetRecordingSeconds,
+      countupAssetIndex,
+      countdownAssetIndex,
       assets,
       assetIndex,
+      playing,
+      togglePlaying,
     } = this.props
     return (
       <div className='App'>
         <Header />
         <Media
           {...{
+            playing,
+            togglePlaying,
             assetIndex,
             assets,
             recording,
             mouseTracking,
             setMouseTracking,
             unsetMouseTracking,
+            countupAssetIndex,
+            countdownAssetIndex,
           }}
         />
         <div className='App-menu'>
@@ -81,6 +89,7 @@ export default withStateHandlers(
     mouseTracking: false,
     assets: [],
     assetIndex: 0,
+    playing: false,
   }),
   {
     toggleRecording: ({recording}) => () => ({recording: !recording}),
@@ -91,5 +100,6 @@ export default withStateHandlers(
     setAssets: updaterOf('assets'),
     countupAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex + 1}),
     countdownAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex - 1}),
+    togglePlaying: updaterOf('playing'),
   }
 )(App)

@@ -6,6 +6,12 @@ import {assetPathToUrl} from '../helpers'
 
 const noop = () => {}
 
+const Keys = {
+  ENTER: 13,
+  RIGHT: 39,
+  LEFT: 37,
+}
+
 class Media extends React.Component {
   render () {
     const {
@@ -16,7 +22,7 @@ class Media extends React.Component {
       setMouseTracking,
       unsetMouseTracking,
     } = this.props
-    const assetPath = assets[assetIndex] || ''
+    const assetPath = assets[assetIndex]
     return (
       <div className='Media'>
         <div className='Media-main-wrap'>
@@ -29,11 +35,43 @@ class Media extends React.Component {
             onMouseLeave={unsetMouseTracking}
             onMouseMove={(recording && mouseTracking) ? this.recordMouseMoving : noop}
           >
-            <video src={assetPathToUrl(assetPath)} width={640} height={360} />
+            {
+              assetPath &&
+              <video
+                src={assetPathToUrl(assetPath)}
+                width={640}
+                height={360}
+                ref={(v) => { this.video = v }}
+              />
+            }
+            {
+              !assetPath &&
+              'no contents'
+            }
           </div>
         </div>
       </div>
     )
+  }
+
+  componentDidMount () {
+    document.addEventListener('keydown', this.onKeyDown)
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('keydown', this.onKeyDown)
+  }
+
+  onKeyDown = (e) => {
+    const {keyCode} = e
+    switch (keyCode) {
+      case Keys.ENTER:
+      case Keys.RIGHT:
+        this.doNext()
+        return
+      case Keys.LEFT:
+        this.doPrev()
+    }
   }
 
   recordMouseMoving = (e) => {
@@ -44,6 +82,31 @@ class Media extends React.Component {
       y: e.clientY - top,
     }
     db.Cursor.append(cursor)
+  }
+
+  doNext = () => {
+    const {
+      playing,
+      togglePlaying,
+      countupAssetIndex,
+    } = this.props
+    const {video} = this
+    if (playing) {
+      togglePlaying(false)
+      countupAssetIndex()
+    } else {
+      togglePlaying(true)
+      video && video.play()
+    }
+  }
+
+  doPrev = () => {
+    const {
+      togglePlaying,
+      countdownAssetIndex,
+    } = this.props
+    togglePlaying(false)
+    countdownAssetIndex()
   }
 }
 
