@@ -3,11 +3,11 @@ import React from 'react'
 import {pure} from 'recompose'
 
 const ResetButton = ({
-  resetRecording
+  cleanUpRecordingResult
 }) => (
   <span
     className='ResetButton'
-    onClick={resetRecording}
+    onClick={cleanUpRecordingResult}
   >
     RESET
   </span>

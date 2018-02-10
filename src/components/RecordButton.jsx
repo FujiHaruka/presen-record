@@ -7,13 +7,14 @@ const RecordButton = ({
   onClick,
   recording = false,
   recordingDone,
+  ready,
 }) => (
   <div className='RecordButton'>
     <span
       className={c('RecordButton-button', {
-        'RecordButton-button-on': !recordingDone && recording,
-        'RecordButton-button-off': !recordingDone && !recording,
-        'RecordButton-button-disabled': recordingDone,
+        'RecordButton-button-on': ready && !recordingDone && recording,
+        'RecordButton-button-off': ready && !recordingDone && !recording,
+        'RecordButton-button-disabled': !ready || recordingDone,
       })}
       onClick={onClick}
     />

@@ -97,6 +97,9 @@ class Media extends React.Component {
         return
       case Keys.LEFT:
         this.doPrev()
+        break
+      default:
+        break
     }
   }
 

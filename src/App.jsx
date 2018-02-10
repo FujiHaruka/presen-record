@@ -15,14 +15,14 @@ import {
 import updaterOf from './helpers/updaterOf'
 import db from './db'
 import {ProgressEvent} from './Consts'
+import AudioRecorder from './helpers/AudioRecorder'
 
 class App extends Component {
   render () {
     const {
+      ready,
       recording,
-      toggleRecording,
       recordingDone,
-      toggleRecordingDone,
       mouseTracking,
       setMouseTracking,
       unsetMouseTracking,
@@ -35,7 +35,7 @@ class App extends Component {
       togglePlaying,
     } = this.props
     const {
-      resetRecording,
+      cleanUpRecordingResult,
       onClickRecordingButton,
     } = this
     return (
@@ -63,6 +63,7 @@ class App extends Component {
             <RecordButton
               onClick={onClickRecordingButton}
               {...{
+                ready,
                 recording,
                 recordingDone,
               }}
@@ -72,7 +73,7 @@ class App extends Component {
               <div className='App-ResetButton'>
                 <ResetButton
                   {...{
-                    resetRecording
+                    cleanUpRecordingResult
                   }}
                 />
               </div>
@@ -97,6 +98,10 @@ class App extends Component {
         break
       }
     }
+
+    this.recorder = new AudioRecorder()
+    await this.recorder.ready()
+    this.props.readyOk()
   }
 
   componentDidUpdate (prev) {
@@ -115,24 +120,29 @@ class App extends Component {
 
   onClickRecordingButton = async () => {
     const {
+      ready,
       recording,
       recordingDone,
       toggleRecording,
       toggleRecordingDone,
       resetAssetIndex,
     } = this.props
-    if (recordingDone) {
+    if (!ready || recordingDone) {
       return
     }
-    resetAssetIndex()
     toggleRecording()
     if (recording) {
+      // Stop recording
       toggleRecordingDone()
+      this.recorder.stopAndSaveRecording()
       db.Progress.append({
         event: ProgressEvent.END,
         at: Date.now()
       })
     } else {
+      // Start recording
+      this.recorder.startRecording()
+      resetAssetIndex()
       db.Progress.append({
         event: ProgressEvent.START,
         at: Date.now()
@@ -140,7 +150,7 @@ class App extends Component {
     }
   }
 
-  resetRecording = async () => {
+  cleanUpRecordingResult = async () => {
     const ok = window.confirm('データを消去してよろしいですか？')
     if (!ok) {
       return
@@ -157,6 +167,7 @@ class App extends Component {
     }
     resetAssetIndex()
     resetRecordingSeconds()
+    await this.recorder.delete()
     for (const Resource of Object.values(db)) {
       await Resource.drop()
     }
@@ -165,6 +176,7 @@ class App extends Component {
 
 export default withStateHandlers(
   () => ({
+    ready: false,
     recording: false,
     recordingDone: false,
     recordingSeconds: 0,
@@ -174,6 +186,7 @@ export default withStateHandlers(
     playing: false,
   }),
   {
+    readyOk: () => () => ({ready: true}),
     toggleRecording: ({recording}) => () => ({recording: !recording}),
     toggleRecordingDone: ({recordingDone}) => () => ({recordingDone: !recordingDone}),
     setMouseTracking: () => () => ({mouseTracking: true}),
