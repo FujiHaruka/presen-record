@@ -33,7 +33,13 @@ class Resource {
   }
 
   async load () {
-    const entities = (await readFile(this.filePath))
+    const {filePath} = this
+    const exists = await existsFile(filePath)
+    if (!exists) {
+      return []
+    }
+    const entities = (await readFile(filePath))
+      .toString()
       .trim()
       .split('\n')
       .map((line) => JSON.parse(line))

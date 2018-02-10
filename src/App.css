@@ -18,3 +18,9 @@
   position: relative;
   width: 640px;
 }
+
+.App-ResetButton {
+  position: absolute;
+  right: 0;
+  top: 0px;
+}

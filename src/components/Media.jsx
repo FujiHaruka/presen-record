@@ -167,6 +167,7 @@ class Media extends React.Component {
     video.addEventListener('ended', () => {
       this.stop()
     })
+    console.log('Animation started')
   }
 
   stop () {
@@ -174,6 +175,7 @@ class Media extends React.Component {
     if (this.animationId) {
       window.cancelAnimationFrame(this.animationId)
       this.animationId = null
+      console.log('Animation stopped')
     }
   }
 

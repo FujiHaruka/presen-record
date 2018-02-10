@@ -5,6 +5,7 @@ import {
   Header,
   Media,
   RecordButton,
+  ResetButton,
   Time,
 } from './components'
 import {
@@ -12,6 +13,8 @@ import {
   join,
 } from './helpers/nodejs'
 import updaterOf from './helpers/updaterOf'
+import db from './db'
+import {ProgressEvent} from './Consts'
 
 class App extends Component {
   render () {
@@ -24,7 +27,6 @@ class App extends Component {
       setMouseTracking,
       unsetMouseTracking,
       recordingSeconds,
-      resetRecordingSeconds,
       countupAssetIndex,
       countdownAssetIndex,
       assets,
@@ -32,6 +34,10 @@ class App extends Component {
       playing,
       togglePlaying,
     } = this.props
+    const {
+      resetRecording,
+      onClickRecordingButton,
+    } = this
     return (
       <div className='App'>
         <Header />
@@ -55,13 +61,22 @@ class App extends Component {
               totalSeconds={recordingSeconds}
             />
             <RecordButton
+              onClick={onClickRecordingButton}
               {...{
                 recording,
                 recordingDone,
-                toggleRecording,
-                toggleRecordingDone,
               }}
             />
+            {
+              recordingDone &&
+              <div className='App-ResetButton'>
+                <ResetButton
+                  {...{
+                    resetRecording
+                  }}
+                />
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -73,6 +88,15 @@ class App extends Component {
     const files = await readdir(assetDir)
     const filePaths = files.map((file) => join(assetDir, file))
     this.props.setAssets(filePaths)
+
+    // データベースにデータがあれば録音完了とみなす
+    for (const Resource of Object.values(db)) {
+      const data = await Resource.load()
+      if (data.length > 1) {
+        this.props.toggleRecordingDone()
+        break
+      }
+    }
   }
 
   componentDidUpdate (prev) {
@@ -86,6 +110,55 @@ class App extends Component {
       } else {
         clearInterval(this.timeTimer)
       }
+    }
+  }
+
+  onClickRecordingButton = async () => {
+    const {
+      recording,
+      recordingDone,
+      toggleRecording,
+      toggleRecordingDone,
+      resetAssetIndex,
+    } = this.props
+    if (recordingDone) {
+      return
+    }
+    resetAssetIndex()
+    toggleRecording()
+    if (recording) {
+      toggleRecordingDone()
+      db.Progress.append({
+        event: ProgressEvent.END,
+        at: Date.now()
+      })
+    } else {
+      db.Progress.append({
+        event: ProgressEvent.START,
+        at: Date.now()
+      })
+    }
+  }
+
+  resetRecording = async () => {
+    const ok = window.confirm('データを消去してよろしいですか？')
+    if (!ok) {
+      return
+    }
+    console.log('Reset')
+    const {
+      recordingDone,
+      toggleRecordingDone,
+      resetAssetIndex,
+      resetRecordingSeconds,
+    } = this.props
+    if (recordingDone) {
+      toggleRecordingDone()
+    }
+    resetAssetIndex()
+    resetRecordingSeconds()
+    for (const Resource of Object.values(db)) {
+      await Resource.drop()
     }
   }
 }
@@ -110,6 +183,7 @@ export default withStateHandlers(
     setAssets: updaterOf('assets'),
     countupAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex + 1}),
     countdownAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex > 0 ? assetIndex - 1 : 0}),
+    resetAssetIndex: () => () => ({assetIndex: 0}),
     togglePlaying: updaterOf('playing'),
   }
 )(App)
