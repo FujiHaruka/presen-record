@@ -13,6 +13,7 @@
     "electron": "^1.7.11",
     "electron-args": "^0.1.0",
     "es6-promisify": "^5.0.0",
+    "fs-extra": "^5.0.0",
     "linkstate": "^1.1.0",
     "query-string": "^5.0.1",
     "ramda": "^0.25.0",
