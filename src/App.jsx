@@ -47,14 +47,16 @@ class App extends Component {
             countdownAssetIndex,
           }}
         />
-        <div className='App-menu'>
-          <Time
-            totalSeconds={recordingSeconds}
-          />
-          <RecordButton
-            recording={recording}
-            onToggleRecording={toggleRecording}
-          />
+        <div className='App-menu-wrap'>
+          <div className='App-menu'>
+            <Time
+              totalSeconds={recordingSeconds}
+            />
+            <RecordButton
+              recording={recording}
+              onToggleRecording={toggleRecording}
+            />
+          </div>
         </div>
       </div>
     )
@@ -99,7 +101,7 @@ export default withStateHandlers(
     resetRecordingSeconds: () => () => ({recordingSeconds: 0}),
     setAssets: updaterOf('assets'),
     countupAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex + 1}),
-    countdownAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex - 1}),
+    countdownAssetIndex: ({assetIndex}) => () => ({assetIndex: assetIndex > 0 ? assetIndex - 1 : 0}),
     togglePlaying: updaterOf('playing'),
   }
 )(App)

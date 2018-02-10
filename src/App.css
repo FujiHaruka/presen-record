@@ -5,9 +5,16 @@
   position: relative;
 }
 
-.App-menu {
+.App-menu-wrap {
   position: absolute;
   bottom: 130px;
   left: 0;
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.App-menu {
+  position: relative;
+  width: 640px;
 }

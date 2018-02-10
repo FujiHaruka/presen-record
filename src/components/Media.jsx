@@ -12,6 +12,11 @@ const Keys = {
   LEFT: 37,
 }
 
+const MediaSize = {
+  WIDTH: 640,
+  HEIGHT: 360,
+}
+
 class Media extends React.Component {
   render () {
     const {
@@ -35,18 +40,22 @@ class Media extends React.Component {
             onMouseLeave={unsetMouseTracking}
             onMouseMove={(recording && mouseTracking) ? this.recordMouseMoving : noop}
           >
+            <canvas className='Media-canvas' width={MediaSize.WIDTH} height={MediaSize.HEIGHT} ref={(c) => { this.canvas = c }} />
             {
               assetPath &&
               <video
+                className='Media-video'
                 src={assetPathToUrl(assetPath)}
-                width={640}
-                height={360}
+                width={MediaSize.WIDTH}
+                height={MediaSize.HEIGHT}
                 ref={(v) => { this.video = v }}
               />
             }
             {
               !assetPath &&
-              'no contents'
+              <div className='Media-nocontent'>
+                <div>no contents</div>
+              </div>
             }
           </div>
         </div>
@@ -60,6 +69,22 @@ class Media extends React.Component {
 
   componentWillUnmount () {
     document.removeEventListener('keydown', this.onKeyDown)
+  }
+
+  componentDidUpdate (prev) {
+    const prevAssetPath = prev.assets[prev.assetIndex]
+    const {
+      assets,
+      assetIndex,
+    } = this.props
+    const assetPath = assets[assetIndex]
+    if (prevAssetPath !== assetPath) {
+      const {video, canvas} = this
+      video.addEventListener('canplay', () => {
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(video, 0, 0, MediaSize.WIDTH, MediaSize.HEIGHT)
+      })
+    }
   }
 
   onKeyDown = (e) => {
@@ -90,13 +115,13 @@ class Media extends React.Component {
       togglePlaying,
       countupAssetIndex,
     } = this.props
-    const {video} = this
     if (playing) {
+      this.stop()
       togglePlaying(false)
       countupAssetIndex()
     } else {
       togglePlaying(true)
-      video && video.play()
+      this.play()
     }
   }
 
@@ -105,8 +130,44 @@ class Media extends React.Component {
       togglePlaying,
       countdownAssetIndex,
     } = this.props
+    this.stop()
     togglePlaying(false)
     countdownAssetIndex()
+  }
+
+  /**
+    video 操作
+  */
+
+  play () {
+    const {video, canvas} = this
+    if (!video) {
+      return
+    }
+    const ctx = canvas.getContext('2d')
+    const syncCanvas = () => {
+      ctx.drawImage(video, 0, 0, MediaSize.WIDTH, MediaSize.HEIGHT)
+      window.requestAnimationFrame(syncCanvas)
+    }
+    this.animationId = window.requestAnimationFrame(syncCanvas)
+    video.play()
+    video.addEventListener('ended', () => {
+      this.stop()
+    })
+  }
+
+  stop () {
+    this.pause()
+    if (this.animationId) {
+      window.cancelAnimationFrame(this.animationId)
+      this.animationId = null
+    }
+  }
+
+  pause () {
+    if (this.video) {
+      this.video.pause()
+    }
   }
 }
 
