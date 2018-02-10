@@ -30,3 +30,8 @@
 .RecordButton-button-off:hover {
   background: rgb(255, 85, 85);
 }
+
+.RecordButton-button-disabled {
+  background: #5a5d69;
+  cursor: default;
+}

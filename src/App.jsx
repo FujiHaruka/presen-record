@@ -18,6 +18,8 @@ class App extends Component {
     const {
       recording,
       toggleRecording,
+      recordingDone,
+      toggleRecordingDone,
       mouseTracking,
       setMouseTracking,
       unsetMouseTracking,
@@ -53,8 +55,12 @@ class App extends Component {
               totalSeconds={recordingSeconds}
             />
             <RecordButton
-              recording={recording}
-              onToggleRecording={toggleRecording}
+              {...{
+                recording,
+                recordingDone,
+                toggleRecording,
+                toggleRecordingDone,
+              }}
             />
           </div>
         </div>
@@ -87,6 +93,7 @@ class App extends Component {
 export default withStateHandlers(
   () => ({
     recording: false,
+    recordingDone: false,
     recordingSeconds: 0,
     mouseTracking: false,
     assets: [],
@@ -95,6 +102,7 @@ export default withStateHandlers(
   }),
   {
     toggleRecording: ({recording}) => () => ({recording: !recording}),
+    toggleRecordingDone: ({recordingDone}) => () => ({recordingDone: !recordingDone}),
     setMouseTracking: () => () => ({mouseTracking: true}),
     unsetMouseTracking: () => () => ({mouseTracking: false}),
     countupRecordingSeconds: ({recordingSeconds}) => () => ({recordingSeconds: recordingSeconds + 1}),

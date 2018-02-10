@@ -3,6 +3,7 @@ import React from 'react'
 import {pure} from 'recompose'
 import db from '../db'
 import {assetPathToUrl} from '../helpers'
+import {ProgressEvent} from '../Consts'
 
 const noop = () => {}
 
@@ -111,6 +112,7 @@ class Media extends React.Component {
 
   doNext = () => {
     const {
+      recording,
       playing,
       togglePlaying,
       countupAssetIndex,
@@ -123,13 +125,24 @@ class Media extends React.Component {
       togglePlaying(true)
       this.play()
     }
+    if (recording) {
+      db.Progress.append({
+        event: ProgressEvent.NEXT,
+        at: Date.now()
+      })
+    }
   }
 
   doPrev = () => {
     const {
+      recording,
       togglePlaying,
       countdownAssetIndex,
     } = this.props
+    if (recording) {
+      console.warn('Disabled doPrev while recording')
+      return
+    }
     this.stop()
     togglePlaying(false)
     countdownAssetIndex()
