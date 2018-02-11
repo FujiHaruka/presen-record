@@ -8,6 +8,7 @@
   "dependencies": {
     "asleep": "^1.0.3",
     "blob-to-buffer": "^1.2.7",
+    "boxen": "^1.3.0",
     "classnames": "^2.2.5",
     "coz": "^6.0.20",
     "electron": "^1.7.11",

@@ -8,7 +8,7 @@ const exec = (...args) => {
   console.log('$ ' + args[0])
   return execOriginal(...args)
 }
-const {join, basename} = require('path')
+const {join, basename, resolve} = require('path')
 const assertExists = (path) => {
   if (!test('-f', path)) {
     throw new Error(`File doesn't exists: ${path}`)
@@ -20,7 +20,7 @@ const asInputArgs = (files) => files.map((file) => `-i ${file}`).join(' ')
 
 class VideoScript {
   constructor (projectDir) {
-    this.projectDir = projectDir
+    this.projectDir = resolve(projectDir)
     this.tmpdir = join(projectDir, 'tmp')
     mkdir('-p', this.tmpdir)
   }
@@ -144,7 +144,7 @@ class VideoScript {
     )
     console.log(`Creating ${dest}`)
     // ここで再エンコードする
-    exec(`ffmpeg -y -loglevel error ${asInputArgs([video, audio])} -vcodec libx264 -pix_fmt yuv420p -acodec libfaac ${dest}`)
+    exec(`ffmpeg -y -loglevel error ${asInputArgs([video, audio])} -vcodec libx264 -pix_fmt yuv420p ${dest}`)
     return dest
   }
 

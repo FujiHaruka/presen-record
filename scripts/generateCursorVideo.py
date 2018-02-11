@@ -2,14 +2,21 @@
 import json
 import cv2
 import numpy as np
+from sys import argv
+from os.path import join
+
+PROJ_DIR = argv[1]
+SRC_VIDEO = argv[2]
+DEST_VIDEO = argv[3]
 
 VIDEO_W = 1280  # 720p
 VIDEO_H = 720
 FPS = 30
 CURSOR_SIZE = 30
 
-PROGRESS_FILE = 'tmp/my-project/progress.log'
-CURSOR_FILE = 'tmp/my-project/cursor.log'
+PROGRESS_FILE = join(PROJ_DIR, 'progress.log')
+CURSOR_FILE = join(PROJ_DIR, 'cursor.log')
+CURSOR_ICON_PATH = 'assets/cursor.png'
 
 
 def get_times():
@@ -93,14 +100,13 @@ def print_progress(current, total):
 
 start_at, end_at = get_times()
 cursors = get_cursors()
-cursor_img = cv2.imread('assets/cursor.png')
+cursor_img = cv2.imread(CURSOR_ICON_PATH)
 cursor_positions = calc_cursor_positions(cursors, start_at, end_at)
 
-dest = "tmp/cursor.mov"
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-writer = cv2.VideoWriter(dest, fourcc, FPS, (VIDEO_W, VIDEO_H))
+writer = cv2.VideoWriter(DEST_VIDEO, fourcc, FPS, (VIDEO_W, VIDEO_H))
 
-capture = read_capture("tmp/my-project/tmp/concat.mp4")
+capture = read_capture(SRC_VIDEO)
 
 for i, position in enumerate(cursor_positions):
     has_next, frame = capture.read()

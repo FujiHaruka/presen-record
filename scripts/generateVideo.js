@@ -1,9 +1,12 @@
+#!/usr/bin/env node
 const VideoData = require('./VideoData')
 const VideoScript = require('./VideoScript')
-const {join, extname} = require('path')
+const {join, extname, resolve} = require('path')
 const {
   ls,
+  exec,
 } = require('shelljs')
+const boxen = require('boxen')
 
 const projectDir = process.argv[2]
 if (!projectDir) {
@@ -13,6 +16,7 @@ if (!projectDir) {
 generateVideo(projectDir)
 
 function generateVideo (projectDir) {
+  projectDir = resolve(projectDir)
   const data = new VideoData(projectDir)
   const script = new VideoScript(projectDir)
   const videos = ls(join(projectDir, 'assets'))
@@ -72,14 +76,29 @@ function generateVideo (projectDir) {
   ).filter(Boolean)
 
   const fullVideo = script.concat(assets, {force: false})
-  console.log(fullVideo)
 
   const audioOrig = join(projectDir, 'audio.webm')
   const audio = script.denoiseAuido(audioOrig, {force: true})
-  console.log(audio)
 
   // カーソル動画と合成
+  const appDir = join(__dirname, '..')
+  const asDockerScript = (command) => `
+    docker run -t --rm -v ${appDir}:/home/ -v ${projectDir}:${projectDir} -w /home valian/docker-python-opencv-ffmpeg:py3 ${command}
+  `.trim()
+  const videoWithCorsor = join(projectDir, 'tmp/video_cursored.mov')
+  const generateCursorVideoScript = `python3 scripts/generateCursorVideo.py ${projectDir} ${fullVideo} ${videoWithCorsor}`
+  exec(asDockerScript(generateCursorVideoScript))
 
   // 音声と動画のミックス
-  // script.mixVideoAudio({video: fullVideo, audio})
+  const completed = script.mixVideoAudio({video: videoWithCorsor, audio})
+
+  const message = [
+    'Congratulations !!',
+    `Video was generated at ${completed}`
+  ].join('\n')
+  console.log(boxen(message, {
+    padding: 1,
+    margin: 1,
+    borderColor: 'green'
+  }))
 }
