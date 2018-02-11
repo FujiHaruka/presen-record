@@ -11,6 +11,7 @@ import {
 import {
   readdir,
   join,
+  extname,
 } from './helpers/nodejs'
 import updaterOf from './helpers/updaterOf'
 import db from './db'
@@ -87,8 +88,10 @@ class App extends Component {
   async componentDidMount () {
     const {assetDir} = window.globals
     const files = await readdir(assetDir)
-    const filePaths = files.map((file) => join(assetDir, file))
-    this.props.setAssets(filePaths)
+    const videoPaths = files
+      .filter((file) => ['.mp4', '.mov'].includes(extname(file)))
+      .map((file) => join(assetDir, file))
+    this.props.setAssets(videoPaths)
 
     // データベースにデータがあれば録音完了とみなす
     for (const Resource of Object.values(db)) {

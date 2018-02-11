@@ -71,7 +71,7 @@ function generateVideo (projectDir) {
   const fullVideo = script.concat(assets, {force: false})
   console.log(fullVideo)
 
-  const audioOrig = join(projectDir, 'audio.wav')
+  const audioOrig = join(projectDir, 'audio.webm')
   const audio = script.denoiseAuido(audioOrig, {force: true})
   console.log(audio)
 

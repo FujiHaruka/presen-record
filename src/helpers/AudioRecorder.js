@@ -2,9 +2,9 @@ import blobToBuffer from 'blob-to-buffer'
 import {writeFile, join, unlink, existsFile} from './nodejs'
 
 const RecordRTC = require('recordrtc')
-const {StereoAudioRecorder} = RecordRTC
-if (!StereoAudioRecorder) {
-  throw new Error(`StereoAudioRecorder is ${StereoAudioRecorder}`)
+const {MediaStreamRecorder} = RecordRTC
+if (!MediaStreamRecorder) {
+  throw new Error(`MediaStreamRecorder is ${MediaStreamRecorder}`)
 }
 if (!navigator.getUserMedia) {
   throw new Error(`navigator.getUserMedia is not supported`)
@@ -12,7 +12,7 @@ if (!navigator.getUserMedia) {
 
 class AudioRecorder {
   constructor () {
-    this.filePath = join(window.globals.projectDir, 'audio.wav')
+    this.filePath = join(window.globals.projectDir, 'audio.webm')
     this.recordRTC = null
   }
 
@@ -23,8 +23,8 @@ class AudioRecorder {
           console.log('Got user media')
           const options = {
             type: 'audio',
-            recorderType: StereoAudioRecorder,
-            mimeType: 'audio/wav'
+            recorderType: MediaStreamRecorder,
+            mimeType: 'audio/webm'
           }
           this.recordRTC = RecordRTC(stream, options)
           resolve()
