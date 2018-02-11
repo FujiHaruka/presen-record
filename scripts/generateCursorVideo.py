@@ -59,7 +59,6 @@ def calc_cursor_positions(cursors, start_at, end_at):
                 current_cursor = cursors.pop(0)
                 if current_time < current_cursor['at']:
                     break
-            # TODO 本体コードに問題があるので直す
             current_pos = (
                 int(current_cursor['x']) * 2,
                 int(current_cursor['y']) * 2

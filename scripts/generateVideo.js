@@ -31,7 +31,7 @@ function generateVideo (projectDir) {
       return time - prevTime
     })
 
-  const assets = videos.map((videoPath) => {
+  const assets = videos.map((videoPath, index) => {
     // 最初と最後のフレームを画像として保存
     const firstDuration = eventDurations.shift()
     if (firstDuration === undefined) {
@@ -60,7 +60,18 @@ function generateVideo (projectDir) {
       }
     }
 
-    const lastDuration = secondDuration - videoDuration
+    let lastDuration = secondDuration - videoDuration
+    const isLastVideo = index === videos.length - 1
+    if (isLastVideo) {
+      while (true) {
+        let duration = eventDurations.shift()
+        if (duration === undefined) {
+          break
+        } else {
+          lastDuration += duration
+        }
+      }
+    }
     const lastFramePicture = script.lastFrame(videoPath, {force: false})
     const lastFrameVideo = script.singlePictureVideo(lastFramePicture, {
       duration: lastDuration,
