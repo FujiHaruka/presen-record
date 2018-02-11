@@ -5,7 +5,12 @@ const {
   ls,
 } = require('shelljs')
 
-generateVideo('tmp/my-project')
+const projectDir = process.argv[2]
+if (!projectDir) {
+  console.error('projectDir is required.')
+  process.exit()
+}
+generateVideo(projectDir)
 
 function generateVideo (projectDir) {
   const data = new VideoData(projectDir)
@@ -64,6 +69,14 @@ function generateVideo (projectDir) {
   ).filter(Boolean)
 
   const fullVideo = script.concat(assets, {force: false})
-  const audio = join(projectDir, 'audio.wav')
-  script.mixVideoAudio({video: fullVideo, audio})
+  console.log(fullVideo)
+
+  const audioOrig = join(projectDir, 'audio.wav')
+  const audio = script.denoiseAuido(audioOrig, {force: true})
+  console.log(audio)
+
+  // カーソル動画と合成
+
+  // 音声と動画のミックス
+  // script.mixVideoAudio({video: fullVideo, audio})
 }

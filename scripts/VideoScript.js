@@ -2,6 +2,7 @@ const {
   test,
   exec: execOriginal,
   mkdir,
+  rm,
 } = require('shelljs')
 const exec = (...args) => {
   console.log('$ ' + args[0])
@@ -144,6 +145,30 @@ class VideoScript {
     console.log(`Creating ${dest}`)
     // ここで再エンコードする
     exec(`ffmpeg -y -loglevel error ${asInputArgs([video, audio])} -vcodec libx264 -pix_fmt yuv420p -acodec libfaac ${dest}`)
+    return dest
+  }
+
+  denoiseAuido (audioSrc, options = {}) {
+    const {force = false} = options
+    const tmpWavFile = join(
+      this.tmpdir,
+      'tmp.wav'
+    )
+    const dest = join(
+      this.tmpdir,
+      'audio.wav'
+    )
+    if (!force) {
+      if (test('-f', dest)) {
+        return dest
+      }
+    }
+    console.log(`Creating ${dest}`)
+    // 映像なしの wav ファイルに変換
+    exec(`ffmpeg -y -loglevel error -i ${audioSrc} -vn ${tmpWavFile}`)
+    // ローパスフィルタで高音を除去
+    exec(`sox ${tmpWavFile} ${dest} lowpass 3800`)
+    rm(tmpWavFile)
     return dest
   }
 }
