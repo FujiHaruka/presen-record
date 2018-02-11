@@ -40,7 +40,7 @@ function generateVideo (projectDir) {
     const firstFramePicture = script.firstFrame(videoPath, {force: false})
     const firstFrameVideo = script.singlePictureVideo(firstFramePicture, {
       duration: firstDuration,
-      force: false
+      force: true
     })
 
     const videoDuration = script.duration(videoPath)
@@ -52,7 +52,7 @@ function generateVideo (projectDir) {
       // カットする
       const mainVideo = script.cut(videoPath, {
         duration: secondDuration,
-        force: false
+        force: true
       })
       return {
         mainVideo,
@@ -75,7 +75,7 @@ function generateVideo (projectDir) {
     const lastFramePicture = script.lastFrame(videoPath, {force: false})
     const lastFrameVideo = script.singlePictureVideo(lastFramePicture, {
       duration: lastDuration,
-      force: false
+      force: true
     })
     return {
       firstFrameVideo,
@@ -86,7 +86,7 @@ function generateVideo (projectDir) {
     videos.concat(firstFrameVideo, mainVideo, lastFrameVideo), []
   ).filter(Boolean)
 
-  const fullVideo = script.concat(assets, {force: false})
+  const fullVideo = script.concat(assets, {force: true})
 
   const audioOrig = join(projectDir, 'audio.webm')
   const audio = script.denoiseAuido(audioOrig, {force: true})
