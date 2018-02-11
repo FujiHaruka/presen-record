@@ -1,11 +1,21 @@
 # presen-record
 
-# Development
+## Prepare
 
 ```
 $ npm install
 $ npm link .
+```
+
+## Usage
+
+```
+$ presen-record /path/to/project
+```
+
+## Development
+
+```
 $ npm start
-$ cd path/to/project
-$ NODE_ENV=development presen-record .
+$ NODE_ENV=development presen-record /path/to/project
 ```

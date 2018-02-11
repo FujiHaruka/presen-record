@@ -63,3 +63,4 @@ typings/
 tmp
 var
 .DS_Store
+build
