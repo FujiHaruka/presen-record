@@ -6,7 +6,6 @@ import numpy as np
 VIDEO_W = 1280  # 720p
 VIDEO_H = 720
 FPS = 30
-OUT_OF_FRAME_PADDING = 30
 CURSOR_SIZE = 30
 
 PROGRESS_FILE = 'tmp/my-project/progress.log'
@@ -32,8 +31,8 @@ def get_cursors():
 
 def inside_frame(position):
     x, y = position
-    pad = OUT_OF_FRAME_PADDING
-    return x > pad and x < VIDEO_W - pad and y > pad and y < VIDEO_H - pad
+    pad = CURSOR_SIZE
+    return x > 5 and x < VIDEO_W - pad and y > 5 and y < VIDEO_H - pad
 
 
 def calc_cursor_positions(cursors, start_at, end_at):

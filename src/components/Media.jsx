@@ -4,6 +4,7 @@ import {pure} from 'recompose'
 import db from '../db'
 import {assetPathToUrl} from '../helpers'
 import {ProgressEvent} from '../Consts'
+import Time from './Time'
 
 const noop = () => {}
 
@@ -27,14 +28,16 @@ class Media extends React.Component {
       mouseTracking,
       setMouseTracking,
       unsetMouseTracking,
+      recordingSeconds,
     } = this.props
     const assetPath = assets[assetIndex]
     return (
       <div className='Media'>
         <div className='Media-main-wrap'>
-          <div
-            className='Media-info'
-          >{assetIndex + 1} / {assets.length}</div>
+          <div className='Media-header'>
+            <Time totalSeconds={recordingSeconds} />
+            <div className='Media-header-page'><code>{assetIndex + 1}/{assets.length}</code></div>
+          </div>
           <div
             className='Media-main'
             onMouseEnter={setMouseTracking}

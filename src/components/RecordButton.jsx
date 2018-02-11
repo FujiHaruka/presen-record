@@ -14,10 +14,10 @@ const RecordButton = ({
       className={c('RecordButton-button', {
         'RecordButton-button-on': ready && !recordingDone && recording,
         'RecordButton-button-off': ready && !recordingDone && !recording,
-        'RecordButton-button-disabled': !ready || recordingDone,
+        'RecordButton-button-done': !ready || recordingDone,
       })}
       onClick={onClick}
-    />
+    >{recordingDone && <code>RESET</code>}</span>
   </div>
 )
 

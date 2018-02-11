@@ -30,6 +30,9 @@ function generateVideo (projectDir) {
   const assets = videos.map((videoPath) => {
     // 最初と最後のフレームを画像として保存
     const firstDuration = eventDurations.shift()
+    if (firstDuration === undefined) {
+      return {}
+    }
     const firstFramePicture = script.firstFrame(videoPath, {force: false})
     const firstFrameVideo = script.singlePictureVideo(firstFramePicture, {
       duration: firstDuration,
@@ -39,7 +42,7 @@ function generateVideo (projectDir) {
     const videoDuration = script.duration(videoPath)
     const secondDuration = eventDurations.shift()
     if (secondDuration === undefined) {
-      throw new Error('Lack of duration')
+      return {firstFrameVideo}
     }
     if (videoDuration >= secondDuration) {
       // カットする

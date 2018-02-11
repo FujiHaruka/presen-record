@@ -13,6 +13,11 @@
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid #222;
+  color: white;
+  line-height: 100px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 100;
 }
 
 .RecordButton-button-on {
@@ -24,14 +29,13 @@
 }
 
 .RecordButton-button-off {
-  background: rgb(255, 102, 102);
+  background: rgb(255, 58, 58);
 }
 
 .RecordButton-button-off:hover {
-  background: rgb(255, 85, 85);
+  background: rgb(243, 46, 46);;
 }
 
-.RecordButton-button-disabled {
+.RecordButton-button-done {
   background: #5a5d69;
-  cursor: default;
 }

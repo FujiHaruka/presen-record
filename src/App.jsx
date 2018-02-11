@@ -2,11 +2,9 @@ import React, { Component } from 'react'
 import './App.css'
 import {withStateHandlers} from 'recompose'
 import {
-  Header,
   Media,
   RecordButton,
   ResetButton,
-  Time,
 } from './components'
 import {
   readdir,
@@ -41,7 +39,6 @@ class App extends Component {
     } = this
     return (
       <div className='App'>
-        <Header />
         <Media
           {...{
             playing,
@@ -54,13 +51,11 @@ class App extends Component {
             unsetMouseTracking,
             countupAssetIndex,
             countdownAssetIndex,
+            recordingSeconds,
           }}
         />
         <div className='App-menu-wrap'>
           <div className='App-menu'>
-            <Time
-              totalSeconds={recordingSeconds}
-            />
             <RecordButton
               onClick={onClickRecordingButton}
               {...{
@@ -69,16 +64,6 @@ class App extends Component {
                 recordingDone,
               }}
             />
-            {
-              recordingDone &&
-              <div className='App-ResetButton'>
-                <ResetButton
-                  {...{
-                    cleanUpRecordingResult
-                  }}
-                />
-              </div>
-            }
           </div>
         </div>
       </div>
@@ -130,7 +115,11 @@ class App extends Component {
       toggleRecordingDone,
       resetAssetIndex,
     } = this.props
-    if (!ready || recordingDone) {
+    if (!ready) {
+      return
+    }
+    if (recordingDone) {
+      this.cleanUpRecordingResult()
       return
     }
     toggleRecording()

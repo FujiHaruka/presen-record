@@ -13,7 +13,7 @@ const Time = ({
   totalSeconds
 }) => (
   <div className='Time'>
-    <pre><code>{formatTime(totalSeconds)}</code></pre>
+    <code>{formatTime(totalSeconds)}</code>
   </div>
 )
 
