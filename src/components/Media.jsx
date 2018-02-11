@@ -80,6 +80,7 @@ class Media extends React.Component {
     const {
       assets,
       assetIndex,
+      recordingDone
     } = this.props
     const assetPath = assets[assetIndex]
     if (prevAssetPath !== assetPath) {
@@ -88,6 +89,9 @@ class Media extends React.Component {
         const ctx = canvas.getContext('2d')
         ctx.drawImage(video, 0, 0, MediaSize.WIDTH, MediaSize.HEIGHT)
       })
+    }
+    if (!prev.recordingDone && recordingDone) {
+      this.stop()
     }
   }
 

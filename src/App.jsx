@@ -34,7 +34,6 @@ class App extends Component {
       togglePlaying,
     } = this.props
     const {
-      cleanUpRecordingResult,
       onClickRecordingButton,
     } = this
     return (
@@ -52,6 +51,7 @@ class App extends Component {
             countupAssetIndex,
             countdownAssetIndex,
             recordingSeconds,
+            recordingDone,
           }}
         />
         <div className='App-menu-wrap'>
