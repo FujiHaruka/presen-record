@@ -4,8 +4,12 @@ const VideoScript = require('./VideoScript')
 const {join, extname, resolve} = require('path')
 const {
   ls,
-  exec,
+  exec: execOriginal,
 } = require('shelljs')
+const exec = (...args) => {
+  console.log('$ ' + args[0])
+  return execOriginal(...args)
+}
 const boxen = require('boxen')
 
 const projectDir = process.argv[2]
