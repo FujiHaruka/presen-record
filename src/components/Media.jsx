@@ -80,7 +80,8 @@ class Media extends React.Component {
     const {
       assets,
       assetIndex,
-      recordingDone
+      recordingDone,
+      togglePlaying,
     } = this.props
     const assetPath = assets[assetIndex]
     if (prevAssetPath !== assetPath) {
@@ -88,6 +89,10 @@ class Media extends React.Component {
       video && canvas && video.addEventListener('canplay', () => {
         const ctx = canvas.getContext('2d')
         ctx.drawImage(video, 0, 0, MediaSize.WIDTH, MediaSize.HEIGHT)
+        if (assetIndex > 0) {
+          this.play()
+          togglePlaying(true)
+        }
       })
     }
     if (!prev.recordingDone && recordingDone) {
@@ -130,17 +135,17 @@ class Media extends React.Component {
       assetIndex,
     } = this.props
     const isLast = assetIndex === assets.length - 1
-    if (playing) {
-      this.stop()
-      togglePlaying(false)
-      if (!isLast) {
-        countupAssetIndex()
-      }
-    } else {
-      togglePlaying(true)
-      this.play()
+    this.stop()
+    if (isLast) {
+      return
     }
-    if (recording && !isLast) {
+    if (assetIndex === 0 && !playing) {
+      this.play()
+    } else {
+      countupAssetIndex()
+    }
+    togglePlaying(true)
+    if (recording) {
       db.Progress.append({
         event: ProgressEvent.NEXT,
         at: Date.now()

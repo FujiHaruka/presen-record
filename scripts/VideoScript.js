@@ -39,8 +39,8 @@ class VideoScript {
     }
     console.log(`Creating ${pictureDest}`)
     let lastFrame = exec(`ffprobe -loglevel error -show_streams "${videoSrc}" | grep nb_frames | head -1 | cut -d \\= -f 2`, {silent: true})
-    lastFrame -= 1
-    exec(`ffmpeg -y -loglevel error -i ${videoSrc} -vf select=\\'eq\\(n,${lastFrame}\\) -vframes 1 ${pictureDest}`)
+    lastFrame -= 2 // 1 だと失敗することがある
+    exec(`ffmpeg -y -loglevel error -i ${videoSrc} -vf "select='eq(n,${lastFrame})'" -vframes 1 ${pictureDest}`)
     return pictureDest
   }
 

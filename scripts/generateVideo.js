@@ -36,35 +36,24 @@ function generateVideo (projectDir) {
     })
 
   const assets = videos.map((videoPath, index) => {
-    // 最初と最後のフレームを画像として保存
-    const firstDuration = eventDurations.shift()
-    if (firstDuration === undefined) {
+    // 最後のフレームを画像として保存
+    const videoDuration = script.duration(videoPath)
+    const playingDuration = eventDurations.shift()
+    if (playingDuration === undefined) {
       return {}
     }
-    const firstFramePicture = script.firstFrame(videoPath, {force: false})
-    const firstFrameVideo = script.singlePictureVideo(firstFramePicture, {
-      duration: firstDuration,
-      force: true
-    })
-
-    const videoDuration = script.duration(videoPath)
-    const secondDuration = eventDurations.shift()
-    if (secondDuration === undefined) {
-      return {firstFrameVideo}
-    }
-    if (videoDuration >= secondDuration) {
+    if (videoDuration >= playingDuration) {
       // カットする
       const mainVideo = script.cut(videoPath, {
-        duration: secondDuration,
-        force: true
+        duration: playingDuration,
+        force: false
       })
       return {
         mainVideo,
-        firstFrameVideo,
       }
     }
 
-    let lastDuration = secondDuration - videoDuration
+    let waitingDuration = playingDuration - videoDuration
     const isLastVideo = index === videos.length - 1
     if (isLastVideo) {
       while (true) {
@@ -72,22 +61,21 @@ function generateVideo (projectDir) {
         if (duration === undefined) {
           break
         } else {
-          lastDuration += duration
+          waitingDuration += duration
         }
       }
     }
     const lastFramePicture = script.lastFrame(videoPath, {force: false})
     const lastFrameVideo = script.singlePictureVideo(lastFramePicture, {
-      duration: lastDuration,
+      duration: waitingDuration,
       force: true
     })
     return {
-      firstFrameVideo,
       mainVideo: videoPath,
       lastFrameVideo,
     }
-  }).reduce((videos, {firstFrameVideo, mainVideo, lastFrameVideo}) =>
-    videos.concat(firstFrameVideo, mainVideo, lastFrameVideo), []
+  }).reduce((videos, {mainVideo, lastFrameVideo}) =>
+    videos.concat(mainVideo, lastFrameVideo), []
   ).filter(Boolean)
 
   const fullVideo = script.concat(assets, {force: true})
