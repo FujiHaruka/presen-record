@@ -45,16 +45,13 @@ class Media extends React.Component {
             onMouseMove={(recording && mouseTracking) ? this.recordMouseMoving : noop}
           >
             <canvas className='Media-canvas' width={MediaSize.WIDTH} height={MediaSize.HEIGHT} ref={(c) => { this.canvas = c }} />
-            {
-              assetPath &&
-              <video
-                className='Media-video'
-                src={assetPathToUrl(assetPath)}
-                width={MediaSize.WIDTH}
-                height={MediaSize.HEIGHT}
-                ref={(v) => { this.video = v }}
-              />
-            }
+            <video
+              className='Media-video'
+              src={assetPath && assetPathToUrl(assetPath)}
+              width={MediaSize.WIDTH}
+              height={MediaSize.HEIGHT}
+              ref={(v) => { this.video = v }}
+            />
             {
               !assetPath &&
               <div className='Media-nocontent'>
@@ -69,6 +66,16 @@ class Media extends React.Component {
 
   componentDidMount () {
     document.addEventListener('keydown', this.onKeyDown)
+
+    const {video, canvas} = this
+    video.addEventListener('canplay', () => {
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(video, 0, 0, MediaSize.WIDTH, MediaSize.HEIGHT)
+      if (this.props.assetIndex > 0) {
+        this.play()
+        this.props.togglePlaying(true)
+      }
+    })
   }
 
   componentWillUnmount () {
@@ -76,25 +83,9 @@ class Media extends React.Component {
   }
 
   componentDidUpdate (prev) {
-    const prevAssetPath = prev.assets[prev.assetIndex]
     const {
-      assets,
-      assetIndex,
       recordingDone,
-      togglePlaying,
     } = this.props
-    const assetPath = assets[assetIndex]
-    if (prevAssetPath !== assetPath) {
-      const {video, canvas} = this
-      video && canvas && video.addEventListener('canplay', () => {
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(video, 0, 0, MediaSize.WIDTH, MediaSize.HEIGHT)
-        if (assetIndex > 0) {
-          this.play()
-          togglePlaying(true)
-        }
-      })
-    }
     if (!prev.recordingDone && recordingDone) {
       this.stop()
     }
@@ -177,6 +168,7 @@ class Media extends React.Component {
     if (!video) {
       return
     }
+    this.stop() // 前のビデオを終了する
     const ctx = canvas.getContext('2d')
     const syncCanvas = () => {
       ctx.drawImage(video, 0, 0, MediaSize.WIDTH, MediaSize.HEIGHT)
@@ -187,15 +179,15 @@ class Media extends React.Component {
     video.addEventListener('ended', () => {
       this.stop()
     })
-    console.log('Animation started')
+    console.log(`Animation started (request id = ${this.animationId})`)
   }
 
   stop () {
     this.pause()
     if (this.animationId) {
       window.cancelAnimationFrame(this.animationId)
+      console.log(`Animation stopped (request id = ${this.animationId})`)
       this.animationId = null
-      console.log('Animation stopped')
     }
   }
 
