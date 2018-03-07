@@ -5,12 +5,18 @@ const {join, extname, resolve} = require('path')
 const {
   ls,
   exec: execOriginal,
+  test,
 } = require('shelljs')
 const exec = (...args) => {
   console.log('$ ' + args[0])
   return execOriginal(...args)
 }
 const boxen = require('boxen')
+const assertExists = (path) => {
+  if (!test('-f', path)) {
+    throw new Error(`File doesn't exists: ${path}`)
+  }
+}
 
 const projectDir = process.argv[2]
 if (!projectDir) {
@@ -28,6 +34,7 @@ function generateVideo (projectDir) {
     .filter((path) => ['.mp4', '.mov'].includes(extname(path)))
 
   // Mutable
+  data.eventTimes.splice(1, 1) // 1回目のキーイベントを除く
   const eventDurations = data.eventTimes
     .slice(1)
     .map((time, index) => {
@@ -90,7 +97,14 @@ function generateVideo (projectDir) {
   `.trim()
   const videoWithCorsor = join(projectDir, 'tmp/video_cursored.mov')
   const generateCursorVideoScript = `python3 scripts/generateCursorVideo.py ${projectDir} ${fullVideo} ${videoWithCorsor}`
-  exec(asDockerScript(generateCursorVideoScript))
+  try {
+    exec(asDockerScript(generateCursorVideoScript))
+    assertExists(videoWithCorsor)
+  } catch (e) {
+    console.error(e)
+    console.log('Copy video')
+    exec(`cp ${fullVideo} ${videoWithCorsor}`)
+  }
 
   // 音声と動画のミックス
   const completed = script.mixVideoAudio({video: videoWithCorsor, audio})

@@ -14,13 +14,6 @@ class VideoData {
     this.projectDir = projectDir
 
     // Load data
-    // TODO あとで
-    // const cursorPath = join(projectDir, 'cursor.log')
-    // const cursors = cat(cursorPath)
-    //   .toString()
-    //   .trim()
-    //   .split('\n')
-    //   .map((line) => JSON.parse(line))
     const progressPath = join(projectDir, 'progress.log')
     const progresses = cat(progressPath)
       .toString()
