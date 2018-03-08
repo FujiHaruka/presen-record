@@ -4,7 +4,6 @@ import {withStateHandlers} from 'recompose'
 import {
   Media,
   RecordButton,
-  ResetButton,
 } from './components'
 import {
   readdir,

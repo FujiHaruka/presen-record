@@ -76,6 +76,9 @@ class Media extends React.Component {
         this.props.togglePlaying(true)
       }
     })
+    video.addEventListener('ended', () => {
+      this.stop()
+    })
   }
 
   componentWillUnmount () {
@@ -176,9 +179,6 @@ class Media extends React.Component {
     }
     this.animationId = window.requestAnimationFrame(syncCanvas)
     video.play()
-    video.addEventListener('ended', () => {
-      this.stop()
-    })
     console.log(`Animation started (request id = ${this.animationId})`)
   }
 
